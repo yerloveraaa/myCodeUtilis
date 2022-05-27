@@ -1,0 +1,3 @@
+# twitter
+
+    disableVirtualization={true}
