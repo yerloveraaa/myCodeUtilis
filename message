@@ -1,0 +1,68 @@
+   // const registrationToken = 'dvtyAKcZQJyVQl-XUu4NN4:APA91bEKpRzCpbnivC5JHIsTnTr0MeHzg-6f0thulGHgXETte3qhOHHcg7mJMF2XdTtsbv-L75JXjoabSrNcKJPdY615cxql--C_iYDIdoddF9tTDfCS0C_YPrb_id_sj5Z2jsi25lS8';
+
+    // const driver = 'ei89Lk95IEhHl-Rrfxdcc9:APA91bEhetFGBo6-xlQxjM28eQ0uylmoHMB8cW69R4w1nZoH_NsUzUamIUbyKCKZsRuhHZquHYWd8jTBx7NrNZrmrnZOgxnNdWBqyNyz231UC02BNsmMJTYIEXcbv1y7mbOe4mS3ZQ1k'
+
+    // const message = {
+    //     data: {
+    //         score: '850',
+    //         time: '2:45'
+    //     },
+    //     token: registrationToken
+    // };
+
+    // // Send a message to the device corresponding to the provided
+    // // registration token.
+    // admin.messaging().send(message)
+    //     .then((response) => {
+    //         console.log('Successfully sent message:', response);
+    //     })
+    //     .catch((error) => {
+    //         console.log('Error sending message:', error);
+    //     });
+    
+    
+    
+async function userNotifications(orderData) {
+    // Get the user from Firestore
+    const getDeviceTokensPromise = admin.firestore()
+        .collection('users').doc(uid).get();
+    // Get the User profile from Firebase Auth
+    const getUserProfilePromise = admin.auth().getUser(uid);
+    // Send notifications to all tokens.
+    Promise.all([getDeviceTokensPromise, getUserProfilePromise])
+        .then(function (results) {
+
+            // // The array containing all the user's tokens.
+            const tokens = Object.keys(results[0].data().pushToken);
+
+            if (tokens.length === 0) {
+                return console.log('There are no notification tokens to send to.');
+            }
+
+            const user = results[1];
+
+            // // Notification details.
+            const payload = {
+                notification: {
+                    title: 'Payment completed!',
+                    body: `Thank you, ${user.displayName}, we received your payment.`
+                }
+            };
+
+            // Send notifications to all tokens.
+            admin.messaging().sendToDevice(tokens, payload)
+                .then(function (response) {
+                    console.log('Successfully sent push: ', response);
+                    return response;
+                })
+                .catch(function (error) {
+                    console.log('Error sending push:', error);
+                });
+
+            return results;
+        })
+        .catch(function (error) {
+            console.log('Error retrieving tokens or user details:', error);
+        });
+
+}
