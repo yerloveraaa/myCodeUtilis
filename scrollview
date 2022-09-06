@@ -1,0 +1,213 @@
+import React from 'react';
+import { Dimensions, FlatList, Text, TouchableOpacity, View } from 'react-native';
+
+const { width, height } = Dimensions.get('screen');
+
+const data = [
+    {
+        title: 'Restaurant',
+        subTitle: '10.20 min - $0.99 Delivery Fee',
+    },
+    {
+        title: 'Clothing',
+        subTitle: '10.20 min',
+    },
+    {
+        title: 'GroceryGourmet',
+        subTitle: '10.20 min - $0.99 Delivery Fee',
+    },
+    {
+        title: 'Liquor',
+        subTitle: '10.20 min',
+    },
+    {
+        title: 'Books',
+        subTitle: '10.20 min - $0.99 Delivery Fee',
+    },
+    {
+        title: 'CellPhones',
+        subTitle: '10.20 min',
+    },
+    {
+        title: 'Computers',
+        subTitle: '10.20 min - $0.99 Delivery Fee',
+    },
+    {
+        title: 'VideoGames',
+        subTitle: '10.20 min',
+    },
+];
+
+const _spacing = 10;
+
+export default function UberEats() {
+    const ref = React.useRef(null);
+    const [index, setIndex] = React.useState(0);
+    const [viewPosition, setViewPosition] = React.useState(0);
+
+    React.useEffect(() => {
+        ref.current?.scrollToIndex({
+            index,
+            animated: true,
+            viewOffset: 10,
+            viewPosition,
+        });
+    }, [index, viewPosition]);
+
+    console.log(viewPosition);
+
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <FlatList
+                ref={ref}
+                style={{ flexGrow: 0 }}
+                data={data}
+                initialScrollIndex={index}
+                keyExtractor={(item) => item.key}
+                contentContainerStyle={{ paddingLeft: _spacing }}
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                renderItem={({ item, index: fIndex }) => {
+                    return (
+                        <TouchableOpacity onPress={() => {}}>
+                            <View
+                                style={{
+                                    marginRight: _spacing,
+                                    padding: _spacing,
+                                    borderWidth: 2,
+                                    borderColor: '#ff0',
+                                    borderRadius: 12,
+                                    backgroundColor: fIndex === index ? '#ff0' : '#ddd',
+                                }}
+                            >
+                                <Text style={{ color: '#36303F', fontWeight: '700' }}>{item.title}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    );
+                }}
+            />
+            <View
+                style={{
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    marginTop: _spacing * 10,
+                }}
+            >
+                <View style={{ alignItems: 'center' }}>
+                    <Text
+                        style={{
+                            color: '#36303F',
+                            fontWeight: '700',
+                            marginBottom: _spacing,
+                        }}
+                    >
+                        Scroll position
+                    </Text>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            width: width / 2,
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <TouchableOpacity
+                            onPress={() => {
+                                setViewPosition(0);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    padding: _spacing,
+                                    backgroundColor: '#FCD259',
+                                    borderRadius: _spacing,
+                                    marginRight: _spacing,
+                                }}
+                            >
+                                <Text>LEFT</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setViewPosition(0.5);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    padding: _spacing,
+                                    backgroundColor: '#FCD259',
+                                    borderRadius: _spacing,
+                                    marginRight: _spacing,
+                                }}
+                            >
+                                <Text>center</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setViewPosition(1);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    padding: _spacing,
+                                    backgroundColor: '#FCD259',
+                                    borderRadius: _spacing,
+                                }}
+                            >
+                                <Text>Right</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={{ color: '#36303F', fontWeight: '700', marginBottom: 10 }}>Navigation</Text>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            width: width / 2,
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (index === 0) {
+                                    return;
+                                }
+                                setIndex(index - 1);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    padding: _spacing,
+                                    backgroundColor: '#FCD259',
+                                    borderRadius: _spacing,
+                                    marginRight: _spacing,
+                                }}
+                            >
+                                <Text>left</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (index === data.length - 1) {
+                                    return;
+                                }
+                                setIndex(index + 1);
+                            }}
+                        >
+                            <View
+                                style={{
+                                    padding: _spacing,
+                                    backgroundColor: '#FCD259',
+                                    borderRadius: _spacing,
+                                }}
+                            >
+                                <Text>right</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </View>
+    );
+}
