@@ -1,0 +1,123 @@
+import {
+    View,
+    Text,
+    FlatList,
+    SafeAreaView,
+    StyleSheet,
+    ActivityIndicator,
+    TouchableOpacity,
+    Image,
+} from 'react-native';
+import React, { useState, useEffect } from 'react';
+
+const App = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [data, setData] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState();
+    const [refFlatList, setRefFlatList] = useState();
+
+    useEffect(() => {
+        getListPhotos();
+        return () => {};
+    }, []);
+
+    getListPhotos = () => {
+        const apiURL = 'https://jsonplaceholder.typicode.com/photos?_limit=20&_page=1';
+        fetch(apiURL)
+            .then((res) => res.json())
+            .then((resJson) => {
+                setData(resJson);
+            })
+            .catch((err) => {
+                console.log('Error: ', err);
+            })
+            .finally(() => setIsLoading(false));
+    };
+
+    const onClickItem = (item, index) => {
+        setCurrentIndex(index);
+        const newArrData = data.map((e, index) => {
+            if (item.id == e.id) {
+                return {
+                    ...e,
+                    seleted: true,
+                };
+            }
+            return {
+                ...e,
+                seleted: false,
+            };
+        });
+        setData(newArrData);
+    };
+    renderItem = ({ item, index }) => {
+        return (
+            <TouchableOpacity
+                onPress={() => onClickItem(item, index)}
+                style={[
+                    styles.item,
+                    {
+                        // marginTop: 11,
+                        marginLeft: 14,
+                        height: 150,
+                        width: 200,
+                        backgroundColor: item.seleted ? 'orange' : 'white',
+                    },
+                ]}
+            >
+                <Image resizeMode="contain" source={{ uri: item.url }} style={{ height: 100, width: 100 }} />
+            </TouchableOpacity>
+        );
+    };
+
+    onScroolToItemSelected = () => {
+        refFlatList.scrollToIndex({ animated: true, index: currentIndex });
+    };
+
+    getItemLayout = (data, index) => {
+        return { length: 214, offset: 214 * index, index };
+    };
+    return (
+        <SafeAreaView style={styles.container}>
+            {isLoading ? (
+                <ActivityIndicator />
+            ) : (
+                <FlatList
+                    data={data}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => `key-${item.key}`}
+                    getItemLayout={getItemLayout}
+                    ref={(ref) => setRefFlatList(ref)}
+                    horizontal
+                />
+            )}
+            <TouchableOpacity style={styles.wrapButton} onPress={onScroolToItemSelected}>
+                <Text style={styles.tex}>Scroll to item selected</Text>
+            </TouchableOpacity>
+        </SafeAreaView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+
+    wrapButton: {
+        alignItems: 'center',
+        marginHorizontal: 50,
+        padding: 20,
+        backgroundColor: 'orange',
+    },
+    tex: {
+        fontSize: 20,
+    },
+    item: {
+        borderWidth: 0.5,
+        padding: 8,
+        borderRadius: 10,
+        justifyContent: 'center',
+    },
+});
+
+export default App;
