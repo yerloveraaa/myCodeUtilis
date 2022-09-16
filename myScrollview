@@ -1,0 +1,92 @@
+// Scroll to a Specific Item in ScrollView List View
+// https://aboutreact.com/scroll_to_a_specific_item_in_scrollview_list_view/
+
+// import React in our code
+import React, { useState, useEffect } from 'react';
+
+// import all the components we are going to use
+import { SafeAreaView, View, ScrollView, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
+
+const App = () => {
+    const [dataSource, setDataSource] = useState([
+        {
+            title: 'Restaurant',
+            subTitle: '10.20 min - $0.99 Delivery Fee',
+        },
+        {
+            title: 'Clothing',
+            subTitle: '10.20 min',
+        },
+        {
+            title: 'GroceryGourmet',
+            subTitle: '10.20 min - $0.99 Delivery Fee',
+        },
+        {
+            title: 'Liquor',
+            subTitle: '10.20 min',
+        },
+        {
+            title: 'Books',
+            subTitle: '10.20 min - $0.99 Delivery Fee',
+        },
+        {
+            title: 'CellPhones',
+            subTitle: '10.20 min',
+        },
+        {
+            title: 'Computers',
+            subTitle: '10.20 min - $0.99 Delivery Fee',
+        },
+        {
+            title: 'VideoGames',
+            subTitle: '10.20 min',
+        },
+    ]);
+    const [scrollToIndex, setScrollToIndex] = useState(0);
+    const [dataSourceCords, setDataSourceCords] = useState([]);
+    const [ref, setRef] = useState(null);
+
+    const getItem = (item, key) => {
+        if (dataSourceCords.length > key) {
+            ref.scrollTo({
+                x: dataSourceCords[key - 1],
+                y: 0,
+                animated: true,
+            });
+        } else {
+            alert('Out of Max Index');
+        }
+    };
+
+    return (
+        <SafeAreaView style={{ flex: 1 }}>
+            <View style={{ backgroundColor: '#fff' }}>
+                <ScrollView
+                    horizontal
+                    ref={(ref) => {
+                        setRef(ref);
+                    }}
+                >
+                    {dataSource.map((item, key) => {
+                        return (
+                            <View
+                                key={key}
+                                onLayout={(event) => {
+                                    const layout = event.nativeEvent.layout;
+                                    dataSourceCords[key] = layout.x;
+                                    setDataSourceCords(dataSourceCords);
+                                }}
+                            >
+                                <Text style={{ padding: 10 }} onPress={() => getItem(item, key)}>
+                                    {key}. {item.title}
+                                </Text>
+                            </View>
+                        );
+                    })}
+                </ScrollView>
+            </View>
+        </SafeAreaView>
+    );
+};
+
+export default App;
