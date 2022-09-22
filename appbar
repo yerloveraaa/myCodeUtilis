@@ -1,0 +1,77 @@
+import * as React from 'react';
+import { View, Platform, StyleSheet } from 'react-native';
+import { Appbar, FAB, Switch, Paragraph, Text, useTheme, RadioButton, List } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
+const MEDIUM_FAB_HEIGHT = 56;
+
+const AppbarExample = ({ navigation }) => {
+    const [showLeftIcon, setShowLeftIcon] = React.useState(true);
+    const [showSubtitle, setShowSubtitle] = React.useState(true);
+    const [showSearchIcon, setShowSearchIcon] = React.useState(true);
+    const [showMoreIcon, setShowMoreIcon] = React.useState(true);
+    const [showCustomColor, setShowCustomColor] = React.useState(false);
+    const [showExactTheme, setShowExactTheme] = React.useState(false);
+    const [appbarMode, setAppbarMode] = React.useState('small');
+    const [showCalendarIcon, setShowCalendarIcon] = React.useState(false);
+    const [showElevated, setShowElevated] = React.useState(false);
+
+    const theme = useTheme();
+    const { bottom, left, right } = useSafeAreaInsets();
+    const height = theme.isV3 ? 80 : 56;
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            header: () => (
+                <Appbar.Header
+                    style={styles.customColor}
+                    theme={{
+                        mode: showExactTheme ? 'exact' : 'adaptive',
+                    }}
+                    mode="small"
+                    elevated={false}
+                >
+                    <Appbar.BackAction onPress={() => navigation.goBack()} />
+                    <Appbar.Content title="Title" subtitle="Subtitle" />
+                    <Appbar.Action icon="calendar" onPress={() => {}} />
+                    <Appbar.Action icon="magnify" onPress={() => {}} />
+                    <Appbar.Action icon={MORE_ICON} onPress={() => {}} />
+                </Appbar.Header>
+            ),
+        });
+    }, [navigation]);
+
+    return <></>;
+};
+
+export default AppbarExample;
+
+const styles = StyleSheet.create({
+    container: {
+        marginBottom: 56,
+    },
+    contentContainer: {
+        paddingVertical: 8,
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+    },
+    bottom: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+    fab: {
+        position: 'absolute',
+        right: 16,
+    },
+    customColor: {
+        backgroundColor: '#ffff00',
+    },
+});
