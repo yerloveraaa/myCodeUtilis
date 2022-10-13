@@ -1,0 +1,76 @@
+import * as React from 'react';
+import { View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Button } from '@jmsstudiosinc/react-native-paper';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+function HomeScreen({ navigation }) {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Home Screen</Text>
+            <Button onPress={() => navigation.navigate('Details')}>go to home</Button>
+        </View>
+    );
+}
+
+function DetailsScreen({ navigation }) {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Details Screen</Text>
+            <Button onPress={() => navigation.navigate('Home')}>go to home</Button>
+        </View>
+    );
+}
+
+function TabHomeScreen({ navigation }) {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Tab Home Screen</Text>
+            <Button onPress={() => navigation.navigate('Home')}>go to Feed</Button>
+        </View>
+    );
+}
+function TabFeedScreen({ navigation }) {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Tab Feed Screen</Text>
+            <Button onPress={() => navigation.navigate('tapNotifications')}>go to tapNotifications</Button>
+        </View>
+    );
+}
+
+function TabNotificationScreen({ navigation }) {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Details Screen</Text>
+            <Button onPress={() => navigation.navigate('tapFeed')}>go to home</Button>
+        </View>
+    );
+}
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function HomeTabs() {
+    return (
+        <Tab.Navigator>
+            <Tab.Screen name="tapHome" component={TabHomeScreen} />
+            <Tab.Screen name="tapFeed" component={TabFeedScreen} />
+            <Tab.Screen name="tapNotifications" component={TabNotificationScreen} />
+        </Tab.Navigator>
+    );
+}
+
+function App() {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator>
+                <Stack.Screen name="tap" component={HomeTabs} />
+                <Stack.Screen name="Home" component={HomeScreen} options={{ presentation: 'modal' }} />
+                <Stack.Screen name="Details" component={DetailsScreen} options={{ presentation: 'modal' }} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+}
+
+export default App;
