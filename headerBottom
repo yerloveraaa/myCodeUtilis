@@ -1,0 +1,130 @@
+import React, { useLayoutEffect } from 'react';
+import { View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Appbar, Button } from '@jmsstudiosinc/react-native-paper';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createMaterialBottomTabNavigator } from '@jmsstudiosinc/material-bottom-tabs';
+
+function HomeScreen({ navigation }) {
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            header: () => (
+                <Appbar.Header mode="center-aligned" elevated>
+                    <Appbar.Content title="home screen" />
+                </Appbar.Header>
+            ),
+        });
+    }, []);
+
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Home Screen</Text>
+            <Button onPress={() => navigation.navigate('Details')}>go to home</Button>
+        </View>
+    );
+}
+
+function DetailsScreen({ navigation }) {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Details Screen</Text>
+            <Button onPress={() => navigation.navigate('tapFeed')}>go to tapFeed </Button>
+        </View>
+    );
+}
+
+function TabHomeScreen({ navigation }) {
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            header: () => (
+                <Appbar.Header mode="center-aligned" elevated>
+                    <Appbar.Content title="Tab Home Screen" />
+                </Appbar.Header>
+            ),
+        });
+    }, []);
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Tab Home Screen</Text>
+            <Button onPress={() => navigation.navigate('Home')}>go to Feed</Button>
+        </View>
+    );
+}
+function TabFeedScreen({ navigation }) {
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            header: () => (
+                <Appbar.Header mode="center-aligned" elevated>
+                    <Appbar.Content title="Tab Feed Screen" />
+                </Appbar.Header>
+            ),
+        });
+    }, []);
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Tab Feed Screen</Text>
+            <Button onPress={() => navigation.navigate('tapNotifications')}>go to tapNotifications</Button>
+        </View>
+    );
+}
+
+function TabNotificationScreen({ navigation }) {
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            header: () => (
+                <Appbar.Header mode="center-aligned" elevated>
+                    <Appbar.Content title="Details Screen" />
+                </Appbar.Header>
+            ),
+        });
+    }, []);
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Details Screen</Text>
+            <Button onPress={() => navigation.navigate('tapFeed')}>go to home</Button>
+        </View>
+    );
+}
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function HomeTabs() {
+    return (
+        <Tab.Navigator screenOptions={{ headerShown: false }}>
+            <Tab.Screen name="tapHome" component={TabHomeScreen} options={{ headerShown: true }} />
+            <Tab.Screen name="tapFeed" component={TabFeedScreen} options={{ headerShown: true }} />
+            <Tab.Screen name="tapNotifications" component={TabNotificationScreen} options={{ headerShown: true }} />
+        </Tab.Navigator>
+    );
+}
+
+const AppHeader = () => {
+    return (
+        <Appbar.Header mode="center-aligned" elevated>
+            <Appbar.Content title="home screen" />
+        </Appbar.Header>
+    );
+};
+function App() {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="tap" component={HomeTabs} />
+                <Stack.Screen name="Home" component={HomeScreen} options={{ presentation: 'modal' }} />
+                <Stack.Screen
+                    name="Details"
+                    component={DetailsScreen}
+                    options={{
+                        presentation: 'modal',
+                        headerShown: true,
+                        header: (props) => <AppHeader {...props} />,
+                    }}
+                />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+}
+
+export default App;
