@@ -1,0 +1,117 @@
+import React from 'react';
+
+import { StyleSheet, Image, PixelRatio, Dimensions } from 'react-native';
+
+import { List, MD3LightTheme, Text } from '@jmsstudiosinc/react-native-paper';
+
+import { moderateScale } from 'react-native-size-matters';
+
+const ratio = PixelRatio.get();
+
+const normalize = (size) => {
+    const { width, height } = Dimensions.get('window');
+    console.log(ratio);
+
+    if (ratio >= 2 && ratio < 3) {
+        if (width < 360) {
+            return size * 0.95;
+        } else if (height < 667) {
+            return size;
+        } else if (height >= 667 && height <= 735) {
+            return size * 1.15;
+        }
+
+        return size * 1.25;
+    } else if (ratio >= 3 && ratio < 3.5) {
+        if (width < 360) {
+            return size;
+        } else if (height < 667) {
+            return size * 1.15;
+        } else if (height >= 667 && height <= 735) {
+            return size * 1.2;
+        }
+
+        return size * 1.27;
+    } else if (ratio >= 3.5) {
+        if (width < 360) {
+            return size;
+        } else if (height < 667) {
+            return size * 1.2;
+        } else if (height >= 667 && height <= 735) {
+            return size * 1.25;
+        }
+
+        return size * 1.4;
+    }
+
+    return size;
+};
+
+console.log(' normalize ' + normalize(14));
+console.log('moderateScale ' + moderateScale(14));
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Based on iPhone 5s's scale
+const scale = SCREEN_WIDTH / 320;
+
+const checkIfTablet = () => {
+    const pixelDensity = PixelRatio.get();
+    const adjustedWidth = SCREEN_WIDTH * pixelDensity;
+    const adjustedHeight = SCREEN_WIDTH * pixelDensity;
+    if (pixelDensity < 2 && (adjustedWidth >= 1000 || adjustedHeight >= 1000)) {
+        return true;
+    } else {
+        return pixelDensity === 2 && (adjustedWidth >= 1920 || adjustedHeight >= 1920);
+    }
+};
+
+function normalizes(size) {
+    const isTablet = checkIfTablet();
+    // NOTE: Tablet scaling hasn't been fully tested.
+    const newSize = isTablet ? (size * scale) / 2 : size * scale;
+    if (Platform.OS === 'ios') {
+        return Math.round(PixelRatio.roundToNearestPixel(newSize));
+    } else {
+        return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
+    }
+}
+
+console.log(normalizes(14));
+
+const ListImage = ({ src, title, description, right, ...props }) => {
+    const renderImage = src ? () => <Image source={src} style={styles.image} /> : null;
+    const renderTitle = ({ selectable, titleEllipsizeMode, color }) => (
+        <Text
+            selectable={selectable}
+            ellipsizeMode={titleEllipsizeMode}
+            numberOfLines={1}
+            variant={'bodyLarge'}
+            style={{ color, paddingLeft: MD3LightTheme.margin / 2 }}
+        >
+            {title}
+        </Text>
+    );
+
+    return (
+        <List.Item
+            {...props}
+            title={renderTitle}
+            description={description}
+            left={renderImage}
+            right={right}
+            style={{ paddingLeft: 0 }}
+            descriptionStyle={{ paddingLeft: MD3LightTheme.margin / 2 }}
+            itemStyle={{ marginVertical: 0, justifyContent: true ? 'flex-start' : 'center' }}
+        />
+    );
+};
+
+const styles = StyleSheet.create({
+    image: {
+        width: moderateScale(100),
+        height: moderateScale(56),
+    },
+});
+
+export default ListImage;
