@@ -1,0 +1,34 @@
+import { firebase } from './src/Core/firebase/config';
+
+export const fetchProducts = async (postPerLoad) => {
+    let products = [];
+    const querySnapshot = await firebase.firestore().collection('product_items').limit(postPerLoad).get();
+
+    querySnapshot.forEach((doc) => {
+        const docProduct = doc.data();
+        docProduct.docId = doc.id;
+        products.push(docProduct);
+    });
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+    return { products, lastVisible };
+};
+
+export const fetchMoreProducts = async (startAfter, postPerLoad) => {
+    let products = [];
+    const querySnapshot = await firebase
+        .firestore()
+        .collection('product_items')
+        .startAfter(startAfter)
+        .limit(postPerLoad)
+        .get();
+
+    querySnapshot.forEach((doc) => {
+        const docProduct = doc.data();
+        docProduct.docId = doc.id;
+        products.push(docProduct);
+    });
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+    return { products, lastVisible };
+};
