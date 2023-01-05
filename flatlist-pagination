@@ -1,0 +1,51 @@
+import { Text, SafeAreaView, FlatList, ActivityIndicator, SectionList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { fetchProducts, fetchMoreProducts } from './apiService';
+import { List } from '@jmsstudiosinc/react-native-paper';
+
+const App = () => {
+    const [products, setProducts] = useState([]);
+    const [startAfter, setStartAfter] = useState({});
+    const [postPerLoad] = useState(10);
+    const [lastProduct, setLastProduct] = useState(false);
+
+    useEffect(() => {
+        getProducts();
+    }, []);
+
+    const getProducts = async () => {
+        const product = await fetchProducts(postPerLoad);
+        setProducts([...products, ...product.products]);
+        setStartAfter(product.lastVisible);
+    };
+    const getMoreProduct = async () => {
+        if (!lastProduct) {
+            const product = await fetchMoreProducts(startAfter, postPerLoad);
+            setProducts([...products, ...product.products]);
+            setStartAfter(product.lastVisible);
+            product.products.length == 0 ? setLastProduct(true) : setLastProduct(false);
+        }
+    };
+
+    return (
+        <SafeAreaView>
+            <SectionList
+                sections={[{ data: products }]}
+                keyExtractor={(item, index) => item + index}
+                renderItem={({ item }) => {
+                    return (
+                        <List.Section>
+                            <List.Item title={item.title} description={item.description} />
+                        </List.Section>
+                    );
+                }}
+                onEndReached={getMoreProduct}
+                onEndReachedThreshold={0.01}
+                scrollEventThrottle={150}
+                ListFooterComponent={() => !lastProduct && <ActivityIndicator />}
+            />
+        </SafeAreaView>
+    );
+};
+
+export default App;
