@@ -1,122 +1,147 @@
 /* eslint-disable  */
-import React, { memo, useLayoutEffect, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { memo, useLayoutEffect, useEffect } from "react";
+import PropTypes from "prop-types";
 
-import { View, Text, TouchableOpacity, SectionList, Pressable, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SectionList,
+  Pressable,
+  Dimensions,
+} from "react-native";
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMapMarkerAlt } from '@fortawesome/pro-duotone-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faMapMarkerAlt } from "@fortawesome/pro-duotone-svg-icons";
 
-import { useNavigation } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 
-import { VENDOR_INDUSTRIES_MAPPING, VENDOR_PHOTO_SIZES } from '@jmsstudiosinc/vendor';
-import Fast2ImageKit from '../../components/Fast2ImageKit';
-import { IMLocalized } from '../../Core/localization/IMLocalization';
-import { SkeletonHome, TNEmptyStateView } from '../../Core/truly-native';
+import {
+  VENDOR_INDUSTRIES_MAPPING,
+  VENDOR_PHOTO_SIZES,
+} from "@jmsstudiosinc/vendor";
+import Fast2ImageKit from "../../components/Fast2ImageKit";
+import { IMLocalized } from "../../Core/localization/IMLocalization";
+import { SkeletonHome, TNEmptyStateView } from "../../Core/truly-native";
 
-import DynamicAppStyles from '../../DynamicAppStyles';
-import styles from './styles';
-import { updateUIShoppingIndustry } from '../../Core/ui/redux';
-import { extractUniqueIndustry } from '../IndustryFilter/utils';
+import DynamicAppStyles from "../../DynamicAppStyles";
+import styles from "./styles";
+import { updateUIShoppingIndustry } from "../../Core/ui/redux";
+import { extractUniqueIndustry } from "../IndustryFilter/utils";
 
-import IndustryFilter from '../IndustryFilter/index';
-import PudFilter from './PudFilter/index';
-import Notifications from '../../Core/notifications';
+import IndustryFilter from "../IndustryFilter/index";
+import PudFilter from "./PudFilter/index";
+import Notifications from "../../Core/notifications";
 
 const getBreakpointForScreenSize = ({ theme, dimensions }) => {
-    const sortedBreakpoints = Object.entries(theme.breakpoints).sort((valA, valB) => {
-        return valA[1] - valB[1];
-    });
-    console.log(sortedBreakpoints);
-    return sortedBreakpoints.reduce((acc, [breakpoint, minWidth]) => {
-        if (dimensions.width >= minWidth) return breakpoint;
-        return acc;
-    }, null);
+  const sortedBreakpoints = Object.entries(theme.breakpoints).sort(
+    (valA, valB) => {
+      return valA[1] - valB[1];
+    }
+  );
+  console.log(sortedBreakpoints);
+  return sortedBreakpoints.reduce((acc, [breakpoint, minWidth]) => {
+    if (dimensions.width >= minWidth) return breakpoint;
+    return acc;
+  }, null);
 };
 
 const getResponsiveValue = ({ value, dimensions, theme }) => {
-    if (typeof value === 'object') {
-        return value[getBreakpointForScreenSize({ theme, dimensions })];
-    }
-    return value;
+  if (typeof value === "object") {
+    return value[getBreakpointForScreenSize({ theme, dimensions })];
+  }
+  return value;
 };
 
 const VendorList = ({
-    enrichedNearbyVendors,
-    pudFilteredVendors,
-    fullFilteredVendors,
-    pudFilterOptions,
-    pudFilter,
-    industryFilter,
-    loading,
-    user,
+  enrichedNearbyVendors,
+  pudFilteredVendors,
+  fullFilteredVendors,
+  pudFilterOptions,
+  pudFilter,
+  industryFilter,
+  loading,
+  user,
 }) => {
-    if (loading === true) {
-        return <SkeletonHome />;
-    }
-    const navigation = useNavigation();
-    const dispatch = useDispatch();
+  if (loading === true) {
+    return <SkeletonHome />;
+  }
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-    const dimensions = Dimensions.get('window');
+  const dimensions = Dimensions.get("window");
 
-    const theme = {
-        breakpoints: {
-            smallPhone: 0,
-            phone: 321,
-            tablet: 768,
-        },
-        spacing: {
-            s: 8,
-            m: 16,
-            l: 24,
-            xl: 40,
-        },
-        padding: {
-            smallPhone: 'xs',
-            phone: 's',
-            tablet: 'm',
-        },
-    };
+  const theme = {
+    breakpoints: {
+      smallPhone: 0,
+      phone: 321,
+      tablet: 768,
+    },
+    spacing: {
+      s: 8,
+      m: 16,
+      l: 24,
+      xl: 40,
+    },
+    padding: {
+      smallPhone: "xs",
+      phone: "s",
+      tablet: "m",
+    },
+  };
 
-    const headerTitle = () => (
-        <Pressable
-            style={{
-                flexDirection: 'row',
-                width: '77%',
-            }}
-            testID="Geoposition"
-            onPress={() => navigation.navigate('Geoposition')}
-        >
-            <View style={styles.containerItemNavigation}>
-                <FontAwesomeIcon icon={faMapMarkerAlt} color={DynamicAppStyles.lightColorSet.mainBtnTheme} size={20} />
-            </View>
-            <View style={styles.headerTitle}>
-                <Text numberOfLines={1} style={styles.headerTitle}>
-                    {user.location?.formattedAddress ? user.location.formattedAddress : IMLocalized('Add Your Address')}
-                </Text>
-            </View>
-        </Pressable>
-    );
-    useEffect(() => {
-        navigation.setOptions({
-            headerTitle,
-        });
-    }, []);
+  const headerTitle = () => (
+    <Pressable
+      style={{
+        flexDirection: "row",
+        width: "77%",
+      }}
+      testID="Geoposition"
+      onPress={() => navigation.navigate("Geoposition")}
+    >
+      <View style={styles.containerItemNavigation}>
+        <FontAwesomeIcon
+          icon={faMapMarkerAlt}
+          color={DynamicAppStyles.lightColorSet.mainBtnTheme}
+          size={20}
+        />
+      </View>
+      <View style={styles.headerTitle}>
+        <Text numberOfLines={1} style={styles.headerTitle}>
+          {user.location?.formattedAddress
+            ? user.location.formattedAddress
+            : IMLocalized("Add Your Address")}
+        </Text>
+      </View>
+    </Pressable>
+  );
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle,
+    });
+  }, []);
 
-    console.log(getResponsiveValue({ value: theme.margin, dimensions, theme }));
-    console.log(getResponsiveValue({ value: theme.padding, dimensions, theme }));
+  console.log(getResponsiveValue({ value: theme.margin, dimensions, theme }));
+  console.log(getResponsiveValue({ value: theme.padding, dimensions, theme }));
 
-    return (
-        <View
-            style={{
-                margin: theme.spacing[getResponsiveValue({ value: theme.margin, dimensions, theme })],
-                padding: theme.spacing[getResponsiveValue({ value: theme.padding, dimensions, theme })],
-            }}
-        >
-            <Text>Hola mundo</Text>
-        </View>
-    );
+  return (
+    <View
+      style={{
+        margin:
+          theme.spacing[
+            getResponsiveValue({ value: theme.margin, dimensions, theme })
+          ],
+        padding:
+          theme.spacing[
+            getResponsiveValue({ value: theme.padding, dimensions, theme })
+          ],
+      }}
+    >
+      <Text>Hola mundo</Text>
+    </View>
+  );
 };
 
 export default VendorList;
+// hola mundo
