@@ -1,0 +1,33 @@
+export JAVA_HOME="/Volumes/datos/Android Studio.app/Contents/jre/Contents/Home"
+
+export ANDROID_HOME="/Volumes/datos/sistema/android"
+
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+export PATH="$PATH:$ANDROID_HOME/tools"
+export PATH="$PATH:$ANDROID_HOME/tools/bin"
+export PATH="$PATH:$ANDROID_HOME/emulator"
+
+DIFERENTS
+
+export JAVA_HOME="/Volumes/datos/Android Studio.app/Contents/jbr/Contents/Home"
+export ANDROID_HOME="/Volumes/datos/sistema/android"
+
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+export PATH="$PATH:$ANDROID_HOME/tools"
+export PATH="$PATH:$ANDROID_HOME/tools/bin"
+export PATH="$PATH:$ANDROID_HOME/emulator"
+
+export PATH=$PATH:~/.npm-global/bin
+
+
+
+MAPBOX
+
+ machine api.mapbox.com
+ login mapbox
+ password sk.eyJ1Ijoiam1zdGVjaG5vbG9naWVzaW5jIiwiYSI6ImNsZWxiMTgwYjAxbWkzb21sbTYxcHFhZ2UifQ.hF-htmrynvHlZBtnhrIq6A
+
+
+
+
+
