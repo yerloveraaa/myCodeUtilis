@@ -26,6 +26,15 @@ MAPBOX
  machine api.mapbox.com
  login mapbox
  password sk.eyJ1Ijoiam1zdGVjaG5vbG9naWVzaW5jIiwiYSI6ImNsZWxiMTgwYjAxbWkzb21sbTYxcHFhZ2UifQ.hF-htmrynvHlZBtnhrIq6A
+ 
+ 
+  version of ruby (2.7.2).
+  
+  1- curl -L https://get.rvm.io | bash -s stable
+  2- rvm install ruby-2.7.2
+  3-sudo gem install cocoapods
+  4- gem install cocoapods-user-defined-build-types
+
 
 
 
