@@ -21,7 +21,7 @@ export PATH=$PATH:~/.npm-global/bin
 
 
 
-MAPBOX
+MAPBOX  => .netrc
 
  machine api.mapbox.com
  login mapbox
