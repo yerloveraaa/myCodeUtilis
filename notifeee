@@ -1,0 +1,60 @@
+//import liraries
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
+
+// create a component
+const MyComponent = () => {
+    const setup = {
+        data: {
+            channel_id: 'default',
+            channel_name: 'Default Channel',
+            sound_name: 'default',
+        },
+        notification: {
+            title: 'Notification Title',
+            body: 'Main body content of the notification',
+        },
+    };
+    async function onDisplayNotification(data) {
+        // Request permissions (required for iOS)
+
+        if (Platform.OS == 'ios') {
+            await notifee.requestPermission();
+        }
+
+        // Create a channel (required for Android)
+        const channelId = await notifee.createChannel({
+            id: data?.data?.channel_id,
+            name: data?.data?.channel_name,
+            sound: data?.data?.sound_name,
+            importance: AndroidImportance.HIGH,
+        });
+
+        // Display a notification
+        await notifee.displayNotification({
+            title: data?.notification.title,
+            body: data?.notification.body,
+            android: {
+                channelId,
+            },
+        });
+    }
+    return (
+        <View style={styles.container}>
+            <Button title="Sound" onPress={() => onDisplayNotification(setup)} />
+        </View>
+    );
+};
+
+// define your styles
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
+
+//make this component available to the app
+export default MyComponent;
