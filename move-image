@@ -1,0 +1,147 @@
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { moderateScale } from 'react-native-size-matters';
+
+import { MD3LightTheme, TouchableRipple } from '@jmstechnologiesinc/react-native-paper';
+
+import DraggableFlatList, { ScaleDecorator, NestableScrollContainer } from 'react-native-draggable-flatlist';
+
+import ScreenWrapperSection from '../ScreenWrapper/ScreenWrapperSection';
+
+import FastImage from 'react-native-fast-image';
+
+import { IconButton } from '@jmstechnologiesinc/react-native-paper';
+import { imagekitUrl } from '@jmstechnologiesinc/react-native-components/lib/utils';
+
+import { Photos} from './data'
+
+
+const PhotoGallery = ({ photos, showNav = true, onLongPress, inputDispatchPayloadRef }) => {
+
+
+  
+    const [data, setData] = useState(photos);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+
+    useEffect(() => {
+        setData(photos)
+    }, [photos]);
+
+   
+    const renderItem =({ item, drag, isActive, getIndex }) => {
+        const isSelected = getIndex() === selectedIndex;
+        // console.log(JSON.stringify(item, null, 2))
+
+        
+        const photo = item.uri ? item.uri :  imagekitUrl(item)
+          
+        return (
+            <ScaleDecorator>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={() => setSelectedIndex(getIndex())}
+                    onLongPress={drag}
+                    disabled={isActive}
+                    style={[
+                        styles.rowItem,
+                        { opacity: isActive ? 0.5 : 1 },
+                        isActive ? styles.activeItem : null
+                    ]}
+                >
+                 
+                    <FastImage source={{ uri: photo }} style={styles.photo} resizeMode={FastImage.resizeMode.stretch} />
+
+                    {isSelected && (
+                        <IconButton
+                            icon="delete"
+                            mode="contained"
+                            size={moderateScale(24)}
+                            onPress={() => { /* Acciones para el ícono seleccionado */ }}
+                            style={{
+                                position: 'absolute',
+                                right: 0,
+                                top: 0,
+                            }}
+                        />
+                    )}
+                </TouchableOpacity>
+            </ScaleDecorator>
+        );
+    }
+
+
+
+        const photo = data?.map((photo) => {
+            if (photo.uri) {
+                return photo.uri;
+            } else {
+                return imagekitUrl(photo);
+            }
+        })
+
+
+        const onDragEnd = ({ data: newData }) => {
+            console.log(newData)
+            setData(newData);
+            inputDispatchPayloadRef('photos', newData)
+          };
+
+
+    return (
+        <>
+            {
+                data?.length > 0 && (<FastImage source={{ uri: photo[selectedIndex] }} style={styles.mainImage}  />)
+            }
+
+            {showNav && data?.length > 0 && (<ScreenWrapperSection>
+                <NestableScrollContainer>
+                    <DraggableFlatList
+                        horizontal
+                        data={data}
+                        onDragEnd={onDragEnd}
+                        keyExtractor={(item) =>  item.fileName ? item.fileName : item
+ }
+
+                        // onDragEnd={({ data }) => setData(data)}
+
+                        renderItem={renderItem}
+                    />
+                </NestableScrollContainer>
+            </ScreenWrapperSection>)}
+
+
+
+        </>
+    );
+};
+
+const styles = StyleSheet.create({
+    mainImage: {
+        height: moderateScale(195),
+    },
+    photo: {
+        height: moderateScale(90),
+        width: moderateScale(90),
+    },
+    rowItem: {
+        height: moderateScale(100),
+        width:moderateScale(100),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    text: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    activeItem: {
+        backgroundColor: '#f0f0f0',
+        elevation: 5,
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        shadowOffset: { height: 2, width: 2 },
+    },
+});
+
+export default PhotoGallery;
