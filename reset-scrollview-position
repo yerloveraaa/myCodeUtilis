@@ -1,0 +1,9 @@
+  const scrollViewRef = useRef();
+
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            scrollViewRef.current?.scrollTo({ x: 5, y: 5, animated: true });
+        }
+    }, [isFocused]);
