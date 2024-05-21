@@ -1,0 +1,66 @@
+import React, { useState, useEffect } from 'react';
+import { Button, TextInput } from 'react-native';
+import { auth } from '../Firebase/Config';
+import firebase from 'firebase'
+
+const PhoneSignIn = () => {
+    // If null, no SMS has been sent
+    const [confirm, setConfirm] = useState(null);
+
+    // verification code (OTP - One-Time-Passcode)
+    const [code, setCode] = useState('');
+
+
+
+    const appVerifier = new firebase.auth.RecaptchaVerifier('root', {
+        'size': 'invisible',  // or 'normal'
+        'callback': (response) => {
+            // reCAPTCHA solved - will proceed with submit function
+            console.log("reCAPTCHA solved:", response);
+        }
+    });
+    const phoneNumber = "+123456789";
+    // const appVerifier = new firebase.auth.RecaptchaVerifier('root');
+
+
+    // Handle the button press
+    const signInWithPhoneNumber = () => {
+        auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+            .then((confirmationResult) => {
+                // SMS sent. Prompt user to type the code from the message
+                const code = window.prompt('Enter the code you received by SMS');
+                return confirmationResult.confirm(code);
+            })
+            .catch((error) => {
+                // Error; SMS not sent
+                console.error("Error during phone number authentication", error);
+            });
+    }
+
+    async function confirmCode() {
+        try {
+            await confirm.confirm(code);
+        } catch (error) {
+            console.log('Invalid code.');
+        }
+    }
+
+    if (!confirm) {
+        return (
+            <Button
+                title="Phone Number Sign In"
+                onPress={() => signInWithPhoneNumber('+1 650-555-3434')}
+            />
+        );
+    }
+
+    return (
+        <>
+            <TextInput value={code} onChangeText={text => setCode(text)} />
+            <Button title="Confirm Code" onPress={() => confirmCode()} />
+        </>
+    );
+}
+
+
+export default PhoneSignIn
