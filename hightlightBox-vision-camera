@@ -1,0 +1,91 @@
+import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
+
+const HightlightBox = ({ highlight, layout, scanFrame }) => {
+    return (
+        <View
+            style={[
+                {
+                    position: 'absolute',
+                    borderWidth: 2,
+                    borderColor: 'red',
+                },
+                {
+                    right: highlight.x * (layout.width / scanFrame.height),
+                    top: highlight.y * (layout.height / scanFrame.width),
+                    height: highlight.height * (layout.width / scanFrame.height),
+                    width: highlight.width * (layout.height / scanFrame.width),
+                },
+            ]}
+        />
+    );
+};
+
+export default function App() {
+    const [layout, setLayout] = useState({
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+    });
+    const device = useCameraDevice('back');
+    const [scanFrame, setScanFrame] = useState({ height: 1, width: 1 });
+    const [codeScannerHighlights, setCodeScannerHighlights] = useState([]);
+
+    const onLayout = (evt) => {
+        if (evt.nativeEvent.layout) {
+            setLayout(evt.nativeEvent.layout);
+        }
+    };
+
+    const codeScanner = useCodeScanner({
+        codeTypes: ['qr', 'code-128', 'data-matrix'],
+        onCodeScanned: (codes, frame) => {
+            setScanFrame(frame);
+            setCodeScannerHighlights(
+                codes.map((code) => ({
+                    height: code.frame?.width ?? 0,
+                    width: code.frame?.height ?? 0,
+                    x: code.frame?.y ?? 0,
+                    y: code.frame?.x ?? 0,
+                }))
+            );
+        },
+    });
+
+    if (device == null)
+        return (
+            <View>
+                <Text>No</Text>
+            </View>
+        );
+    return (
+        <>
+            {device != null && (
+                <>
+                    {/* <Camera
+                    style={StyleSheet.absoluteFill}
+                    device={device}
+                    isActive={isActive}
+                    codeScanner={codeScanner}
+                    torch={torch ? 'on' : 'off'}
+                    enableZoomGesture={true}
+                /> */}
+
+                    <Camera
+                        style={StyleSheet.absoluteFill}
+                        device={device}
+                        isActive={true}
+                        onLayout={onLayout}
+                        codeScanner={codeScanner}
+                        enableZoomGesture={true}
+                    />
+                    {codeScannerHighlights.map((hightlight, key) => (
+                        <HightlightBox key={key} highlight={hightlight} layout={layout} scanFrame={scanFrame} />
+                    ))}
+                </>
+            )}
+        </>
+    );
+}
