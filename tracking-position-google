@@ -1,0 +1,154 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, SafeAreaView, Dimensions, Image } from 'react-native';
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import MapViewDirections from 'react-native-maps-directions';
+import { GOOGLE_PLACES_API_KEY } from './constants/GooglePlacesAPIKey';
+import Geolocation from '@react-native-community/geolocation';
+import imagePath from './src/constants/imagePath';
+
+const screen = Dimensions.get( 'window' );
+const ASPECT_RATIO = screen.width / screen.height;
+const LATITUDE_DELTA = 0.04;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+const App = () => {
+  const mapRef = useRef();
+  const [ coord, setCoord ] = useState();
+  const [ destination, setDestination ] = useState( {
+    latitude: 19.427044269900463,
+    longitude: -70.67187814218447,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+  } );
+  const [ watchId, setWatchId ] = useState( null );
+
+  // const onPressAddress = ( details ) => {
+  //   let location = {
+  //     latitude: details?.geometry?.location.lat,
+  //     longitude: details?.geometry?.location.lng,
+  //   };
+  //   setDestination( location );
+  //   moveToLocation( location.latitude, location.longitude );
+  // };
+
+  const moveToLocation = async ( latitude, longitude ) => {
+    mapRef.current.animateToRegion(
+      {
+        latitude,
+        longitude,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+      2000
+    );
+  };
+
+  const getLiveLocation = async () => {
+    Geolocation.getCurrentPosition(
+      ( position ) => {
+        const { latitude, longitude } = position.coords;
+        setCoord( {
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        } );
+      },
+      ( error ) => {
+        console.error( error );
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  };
+
+  const startLocationTracking = () => {
+    const id = Geolocation.watchPosition(
+      ( position ) => {
+        const { latitude, longitude } = position.coords;
+        setCoord( {
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        } );
+        moveToLocation( latitude, longitude );
+      },
+      ( error ) => {
+        console.error( error );
+      },
+      { enableHighAccuracy: true, distanceFilter: 10 } // Se notificará cada 10 metros de movimiento
+    );
+    setWatchId( id );
+  };
+
+  const stopLocationTracking = () => {
+    if ( watchId !== null ) {
+      Geolocation.clearWatch( watchId );
+      setWatchId( null );
+    }
+  };
+
+  useEffect( () => {
+    getLiveLocation();
+    setCoord( {
+      latitude: 19.427044269900463,
+      longitude: -70.67187814218447,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    } );
+
+    // setDestination( {
+    //   latitude: 19.427044269900463,
+    //   longitude: -70.67187814218447,
+    //   latitudeDelta: LATITUDE_DELTA,
+    //   longitudeDelta: LONGITUDE_DELTA,
+    // } );
+
+    startLocationTracking();
+
+    return () => {
+      stopLocationTracking();
+    };
+  }, [] );
+
+  return (
+    <SafeAreaView style={ styles.container }>
+      <MapView ref={ mapRef } provider={ PROVIDER_GOOGLE } style={ styles.map } initialRegion={ coord }>
+        { coord !== undefined && (
+          <Marker coordinate={ coord } />
+
+        ) }
+        { destination !== undefined && <Marker coordinate={ destination } /> }
+        { coord != undefined && destination != undefined ? (
+          <MapViewDirections
+            origin={ coord }
+            destination={ destination }
+            apikey={ GOOGLE_PLACES_API_KEY }
+            strokeColor="hotpink"
+            strokeWidth={ 4 }
+            optimizeWaypoints={ true }
+          />
+        ) : null }
+      </MapView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create( {
+  container: {
+    flex: 1,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+  },
+  searchContainer: {
+    zIndex: 1,
+    flex: 0.5,
+    marginHorizontal: 10,
+    marginVertical: 5,
+  },
+} );
+
+export default App;
