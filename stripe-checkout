@@ -1,0 +1,25 @@
+generar metodos de pago
+
+function getPayment =() => {
+
+
+    const stripe = new Stripe(config.stripeSecretKey, {
+        apiVersion: '2020-08-27',
+    });
+
+    // price_1QDB1qBkKaPzEmarrdkJfvtN
+    try {
+        const price = await stripe.prices.create({
+            currency: 'usd',
+            unit_amount: 1000, // $10 en centavos
+            product_data: {
+                name: 'Gold Plan', // Nombre del producto
+            },
+        });
+
+        console.log('Price created:', price.id); // Mostrar el ID del precio creado
+        return price.id; // Devolver el ID del precio
+    } catch (error) {
+        console.error('Error creating price:', error);
+    }
+}
