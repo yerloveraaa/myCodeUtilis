@@ -694,3 +694,21 @@ const result = vh.filter(item =>
 console.log(result)
 
 
+
+ const getVehiclePositions = (products, coordinate) => {
+        return products?.flatMap(item =>
+            item.data
+                .filter(dataItem => {
+                    const { position } = dataItem.driver;
+                    return position?.[0] !== coordinate?.[0] || position?.[1] !== coordinate?.[1];
+                })
+                .map(dataItem => {
+                    const { position } = dataItem.driver;
+                    return {
+                        longitud: position[0],
+                        latitud: position[1]
+                    };
+                })
+        ) || [];
+    };
+
