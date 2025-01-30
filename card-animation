@@ -1,0 +1,176 @@
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Dimensions,
+  ScrollView,
+  Platform,
+} from "react-native";
+import { Appbar, Card, Text, Button } from "react-native-paper";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AnimatePresence, motion } from "framer-motion";
+
+const { width } = Dimensions.get("window");
+
+const videos = new Array(9).fill(null).map((_, index) => ({
+  id: index + 1,
+  title: "Manchester United v. Nottingham Forest",
+  subtitle: "Premier League Highlights",
+  img: `https://unsplash.it/300/300/?random&__id=${index}`,
+  time: "12:48",
+  views: "38K views",
+  uploaded: "55 minutes ago",
+}));
+
+const VideoCard = ({ video }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.div
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      style={{ position: "relative", margin: 8, height: "100%" }}>
+      <motion.div
+        animate={{ scale: hovered ? 1.2 : 1 }}
+        transition={{ duration: 0.3 }}
+        style={{
+          transformOrigin: "center",
+          position: hovered ? "absolute" : "relative",
+          zIndex: hovered ? 10 : 1,
+          width: "100%",
+        }}>
+        <Card style={styles.card}>
+          <View style={styles.imageContainer}>
+            <Card.Cover source={{ uri: video.img }} style={styles.image} />
+            <Text style={styles.time}>{video.time}</Text>
+          </View>
+          <Card.Content style={styles.content}>
+            <Text variant="titleMedium" style={styles.title}>
+              {video.title}
+            </Text>
+            <Text variant="bodySmall" style={styles.subtitle}>
+              {video.subtitle}
+            </Text>
+            <Text variant="bodySmall" style={styles.meta}>
+              {video.views} · {video.uploaded}
+            </Text>
+          </Card.Content>
+          {hovered && (
+            <AnimatePresence>
+              <motion.div
+                style={{
+                  opacity: hovered ? 1 : 0,
+                  pointerEvents: hovered ? "auto" : "none",
+                  transition: "opacity 0.2s ease-in-out",
+                }}>
+                <Button
+                  mode="contained"
+                  icon="clock-outline"
+                  style={styles.hoverButton}>
+                  Watch Later
+                </Button>
+                <Button
+                  mode="contained"
+                  icon="playlist-plus"
+                  style={styles.hoverButton}>
+                  Add to Playlist
+                </Button>
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </Card>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const VideoGrid = () => {
+  return (
+    <View style={styles.grid}>
+      {Platform.OS === "web" ? (
+        videos.map((video) => <VideoCard key={video.id} video={video} />)
+      ) : (
+        <ScrollView>
+          {videos.map((video) => (
+            <VideoCard key={video.id} video={video} />
+          ))}
+        </ScrollView>
+      )}
+    </View>
+  );
+};
+
+const App = () => {
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <Appbar.Header>
+          <Appbar.Action icon="menu" onPress={() => {}} />
+          <Appbar.Content title="YouTube" />
+          <Appbar.Action icon="magnify" onPress={() => {}} />
+          <Appbar.Action icon="account-circle" onPress={() => {}} />
+        </Appbar.Header>
+
+        <View style={styles.content}>
+          <VideoGrid />
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  content: {
+    flex: 1,
+    padding: 8,
+    overflow: "visible",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+  },
+  card: {
+    borderRadius: 8,
+    overflow: "hidden",
+    elevation: 3,
+  },
+  imageContainer: {
+    position: "relative",
+  },
+  image: {
+    height: 180,
+  },
+  time: {
+    position: "absolute",
+    bottom: 8,
+    right: 8,
+    color: "white",
+    fontSize: 12,
+    padding: 4,
+    borderRadius: 4,
+  },
+  title: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    color: "#606060",
+    fontSize: 12,
+  },
+  meta: {
+    color: "#606060",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  hoverButton: {
+    margin: 6,
+  },
+});
+
+export default App;
