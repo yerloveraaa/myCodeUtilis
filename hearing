@@ -1,0 +1,47 @@
+
+const toRadians = (degree) => (degree * Math.PI) / 180;
+
+// Función para calcular el heading entre dos puntos
+const getHeading = (lat1, lon1, lat2, lon2) => {
+  // Convierte las coordenadas a radianes
+  const φ1 = toRadians(lat1);
+  const φ2 = toRadians(lat2);
+  const Δλ = toRadians(lon2 - lon1);
+
+  // Calcula el heading
+  const x = Math.sin(Δλ) * Math.cos(φ2);
+  const y = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+
+  let heading = Math.atan2(x, y);
+  heading = (heading * 180) / Math.PI; // Convertir de radianes a grados
+
+  // Asegurarse de que el ángulo esté entre 0 y 360 grados
+  if (heading < 0) heading += 360;
+
+  return heading;
+};
+
+// Ejemplo de coordenadas: punto A (19.425257683128752, -70.68291771325148) y punto B (19.426, -70.681)
+const heading = getHeading(42.736319, -71.195455, 42.707736, -71.160963);
+console.log("Heading:", heading);
+
+
+// console.log(vehicles)
+// [{ "latitud": 42.682585, "longitud": -71.139385 }, { "latitud": 42.736319, "longitud": -71.195455 }]
+
+// [-71.160963, 42.707736]
+
+
+
+const vehicleListPositions = [
+  { latitud: 42.70672871610282, longitud: -71.16970871673091 },
+  { latitud: 42.700174347267684, longitud: -71.14732081346533 },
+  { latitud: 42.74578214743835, longitud: -71.15928535388298 },
+  { latitud: 42.71124417471039, longitud: -71.15039249366306 },
+  { latitud: 42.71277011909662, longitud: -71.15155610889458 },
+  { latitud: 42.712572095591916, longitud: -71.15207926239297 },
+  { latitud: 42.71304500972429, longitud: -71.15267533095461 },
+  { latitud: 42.71291921331863, longitud: -71.15498037271595 },
+  { latitud: 42.71083426344938, longitud: -71.15833525636936 },
+  { latitud: 42.718828060137355, longitud: -71.15817795533452 },
+];
